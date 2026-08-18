@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>শিখনী — HSC ও SSC এর জন্য</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1C2B4A">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="mark">শি</div>
+    <div class="name">শিখনী</div>
+  </div>
+  <div class="crumb" id="crumb"></div>
+</header>
+
+<!-- ============ HOME ============ -->
+<section class="view active ruled" id="view-home">
+  <div class="hero">
+    <div class="eyebrow">বিনামূল্যে পাঠ, তোমার ভাষায়</div>
+    <h1>যেই ক্লাস তুমি খুঁজছো,<br>ঠিক সেই অধ্যায় থেকে শুরু করো</h1>
+    <p>SSC ও HSC — বিষয়ভিত্তিক, অধ্যায়ভিত্তিক সাজানো ক্লাস। যেখানে রেখেছিলে, সেখান থেকেই এগিয়ে যাও।</p>
+  </div>
+  <div class="class-picker" id="class-picker"></div>
+</section>
+
+<!-- ============ SUBJECTS ============ -->
+<section class="view" id="view-subjects">
+  <div class="page-head">
+    <div class="eyebrow" id="subj-eyebrow">SSC</div>
+    <h2>কোন বিষয়ে পড়বে আজ?</h2>
+  </div>
+  <div class="subject-grid" id="subject-grid"></div>
+</section>
+
+<!-- ============ CHAPTERS (TOC) ============ -->
+<section class="view" id="view-chapters">
+  <div class="page-head">
+    <div class="eyebrow" id="chap-eyebrow">SSC · পদার্থবিজ্ঞান</div>
+    <h2>অধ্যায় নির্বাচন করো</h2>
+  </div>
+  <div class="toc" id="chapter-toc"></div>
+</section>
+
+<!-- ============ CLASS LIST ============ -->
+<section class="view" id="view-classes">
+  <div class="page-head">
+    <div class="eyebrow" id="class-eyebrow">SSC · পদার্থবিজ্ঞান</div>
+    <h2 id="class-heading">অধ্যায় ১</h2>
+  </div>
+  <div class="class-list" id="class-list"></div>
+</section>
+
+<!-- ============ PLAYER ============ -->
+<section class="view" id="view-player">
+  <div class="player-wrap">
+    <div class="player-skin">
+      <div class="player-topbar">
+        <div class="titles">
+          <div class="title" id="p-title">ভৌত জগত ও পরিমাপ — ১</div>
+          <div class="subtitle"><span id="p-duration">১৮:৪২</span> · <span id="p-chapter-name">অধ্যায় ১</span></div>
+        </div>
+        <button class="fs-btn" id="fs-btn" onclick="toggleFullscreen()" title="ফুলস্ক্রিন">⛶</button>
+      </div>
+      <div class="frame-box" id="frame-box">
+        <div id="p-frame"></div>
+        <div class="frame-error" id="frame-error">
+          <div class="fe-icon">!</div>
+          <div class="fe-text">এই ক্লাসটি এখানে দেখানো যাচ্ছে না</div>
+          <a class="fe-btn" href="#" id="ff-link-2" target="_blank" rel="noopener">YouTube-এ দেখুন ↗</a>
+        </div>
+      </div>
+      <div class="player-progress"><i id="p-progress-fill"></i></div>
+    </div>
+
+    <div class="note-card" id="note-card" style="display:none">
+      <div class="nc-icon">📄</div>
+      <div class="nc-text">
+        <div class="nc-title">ক্লাস নোট</div>
+        <div class="nc-sub">এই ক্লাসের লিখিত নোট দেখুন / ডাউনলোড করুন</div>
+      </div>
+      <a id="note-link" href="#" target="_blank" rel="noopener">দেখুন ↗</a>
+    </div>
+
+    <div class="up-next" id="up-next">
+      <div>
+        <div class="label">পরবর্তী ক্লাস</div>
+        <div class="title" id="next-title">স্কেলার ও ভেক্টর রাশি</div>
+      </div>
+      <button onclick="playNext()">চালাও →</button>
+    </div>
+
+    <div class="chapter-siblings">
+      <h4>এই অধ্যায়ের সব ক্লাস</h4>
+      <div class="class-list" id="sibling-list" style="margin:0; padding:0;"></div>
+    </div>
+  </div>
+</section>
+
+<footer>© শিখনী · সকল অধিকার সংরক্ষিত</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
