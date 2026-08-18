@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>শিখনী — HSC ও SSC এর জন্য</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1C2B4A">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF8F3;
+    --card:#FFFFFF;
+    --ink:#1C2B4A;
+    --ink-soft:#4A5A7A;
+    --blue:#2F4E7D;
+    --gold:#D9A441;
+    --gold-soft:#F3E2BB;
+    --green:#3D8361;
+    --rule: rgba(28,43,74,0.14);
+    --rule-soft: rgba(28,43,74,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Hind Siliguri', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Baloo Da 2', 'Hind Siliguri', sans-serif;
+    color:var(--ink);
+    margin:0;
+  }
+  .mono{font-family:'Space Mono', monospace; letter-spacing:0.02em;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---------- Notebook rule texture ---------- */
+  .ruled{
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 35px,
+      var(--rule-soft) 35px, var(--rule-soft) 36px
+    );
+  }
+  .ruled-margin{
+    position:relative;
+  }
+  .ruled-margin::before{
+    content:"";
+    position:absolute; top:0; bottom:0; left:56px;
+    width:1px; background:rgba(217,73,73,0.25);
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:var(--paper);
+    border-bottom:1px solid var(--rule);
+    padding:14px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .logo{display:flex; align-items:center; gap:8px;}
+  .logo .mark{
+    width:34px; height:34px; border-radius:8px;
+    background:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--gold); font-family:'Baloo Da 2'; font-weight:700; font-size:18px;
+    transform:rotate(-4deg);
+  }
+  .logo .name{font-family:'Baloo Da 2'; font-weight:700; font-size:20px;}
+  .crumb{
+    font-size:13px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;
+  }
+  .crumb span.sep{color:var(--rule);}
+  .crumb button{
+    background:none;border:none;color:var(--ink-soft);font-size:13px;padding:4px 2px;
+  }
+  .crumb button:hover{color:var(--blue); text-decoration:underline;}
+
+  /* ---------- Hero / Home ---------- */
+  .hero{
+    padding:64px 20px 40px;
+    text-align:center;
+    position:relative;
+  }
+  .hero .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size:12px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--green); font-weight:700; margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:38px; line-height:1.25; font-weight:700; max-width:560px; margin:0 auto;
+  }
+  .hero p{
+    color:var(--ink-soft); margin-top:14px; font-size:15px; max-width:420px; margin-left:auto; margin-right:auto;
+  }
+
+  .class-picker{
+    display:flex; gap:16px; padding:8px 20px 56px; max-width:640px; margin:0 auto;
+    flex-wrap:wrap; justify-content:center;
+  }
+  .class-card{
+    flex:1; min-width:220px;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:16px;
+    padding:26px 22px;
+    text-align:left;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 1px 0 var(--rule);
+  }
+  .class-card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(28,43,74,0.10);}
+  .class-card .tag{
+    font-family:'Space Mono'; font-size:11px; color:var(--gold); font-weight:700; letter-spacing:.08em;
+  }
+  .class-card h3{font-size:24px; margin-top:6px;}
+  .class-card .desc{color:var(--ink-soft); font-size:13.5px; margin-top:8px;}
+  .class-card .go{
+    margin-top:16px; font-size:13px; font-weight:600; color:var(--blue);
+    display:flex; align-items:center; gap:5px;
+  }
+
+  /* ---------- Section header (used in subject/chapter views) ---------- */
+  .page-head{
+    padding:36px 20px 18px; max-width:880px; margin:0 auto;
+  }
+  .page-head .eyebrow{
+    font-family:'Space Mono'; font-size:12px; color:var(--blue); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  }
+  .page-head h2{font-size:28px; margin-top:6px;}
+
+  /* ---------- Subject grid ---------- */
+  .subject-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:14px; max-width:880px; margin:20px auto; padding:0 20px;
+  }
+  .subject-card{
+    background:var(--card); border:1px solid var(--rule); border-radius:14px;
+    padding:20px 16px; text-align:center;
+  }
+  .subject-card .icon{font-size:28px;}
+  .subject-card h3{font-size:16px; margin-top:10px;}
+  .subject-card .count{
+    font-family:'Space Mono'; font-size:11px; color:var(--ink-soft); margin-top:4px;
+  }
+  .subject-card:hover{border-color:var(--gold); cursor:pointer;}
+
+  /* ---------- Chapter index (dotted leader like a textbook TOC) ---------- */
+  .toc{max-width:720px; margin:10px auto 60px; padding:0 20px;}
+  .toc-item{
+    display:flex; align-items:baseline; gap:8px;
+    padding:16px 4px; border-bottom:1px solid var(--rule);
+    cursor:pointer;
+  }
+  .toc-item:hover .toc-title{color:var(--blue);}
+  .toc-num{
+    font-family:'Space Mono'; font-size:13px; color:var(--gold); font-weight:700; min-width:26px;
+  }
+  .toc-title{font-size:16.5px; font-weight:600; white-space:nowrap;}
+  .toc-dots{flex:1; border-bottom:2px dotted var(--rule); transform:translateY(-5px); min-width:20px;}
+  .toc-meta{
+    font-family:'Space Mono'; font-size:12px; color:var(--ink-soft); white-space:nowrap;
+  }
+  .progress-dots{display:flex; gap:3px; margin-left:8px;}
+  .progress-dots i{
+    width:6px; height:6px; border-radius:50%; background:var(--rule); display:inline-block;
+  }
+  .progress-dots i.done{background:var(--green);}
+
+  /* ---------- Class (video) list ---------- */
+  .class-list{max-width:720px; margin:10px auto 60px; padding:0 20px; display:flex; flex-direction:column; gap:10px;}
+  .class-row{
+    display:flex; align-items:center; gap:14px;
+    background:var(--card); border:1px solid var(--rule); border-radius:12px;
+    padding:12px 14px; cursor:pointer;
+  }
+  .class-row:hover{border-color:var(--gold);}
+  .class-row .thumb{
+    width:88px; height:52px; border-radius:8px; background:var(--ink);
+    display:flex; align-items:center; justify-content:center; color:var(--gold); font-size:18px;
+    flex-shrink:0; position:relative; overflow:hidden;
+  }
+  .class-row .thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0.85;}
+  .class-row .thumb .play{position:relative; z-index:1;}
+  .class-row .thumb .thumb-fill{
+    position:absolute; left:0; bottom:0; height:3px; background:var(--gold); z-index:1;
+  }
+  .class-row .meta{flex:1; min-width:0;}
+  .class-row .meta .n{font-size:14.5px; font-weight:600;}
+  .class-row .meta .d{font-family:'Space Mono'; font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
+  .class-row .status{font-size:16px;}
+  .class-row .status .pct{font-size:11px; color:var(--ink-soft); font-weight:600;}
+
+  /* ---------- Player view ---------- */
+  .player-wrap{
+    max-width:920px; margin:0 auto; padding:20px 20px 60px;
+  }
+  .player-skin{
+    background:var(--ink); border-radius:16px; overflow:hidden;
+    box-shadow:0 20px 50px rgba(28,43,74,0.25);
+  }
+  .player-topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:9px 14px; color:#fff;
+  }
+  .player-topbar .titles{min-width:0;}
+  .player-topbar .title{font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .player-topbar .subtitle{font-size:11px; color:rgba(255,255,255,0.55); margin-top:1px; font-family:'Space Mono';}
+  .player-topbar .ext-link{
+    width:26px; height:26px; border-radius:8px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    color:rgba(255,255,255,0.55); font-size:13px; background:rgba(255,255,255,0.08);
+  }
+  .player-topbar .ext-link:hover{color:var(--gold); background:rgba(255,255,255,0.14);}
+  .frame-box{position:relative; width:100%; aspect-ratio:16/9; background:#000; overflow:hidden;}
+  .frame-box iframe{position:absolute; inset:0; width:100% !important; height:100% !important; border:0;}
+  #p-frame{position:absolute; inset:0; width:100%; height:100%;}
+  .frame-error{
+    position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
+    background:linear-gradient(180deg,#24304d,#141d33); color:#fff; text-align:center; padding:24px; z-index:2;
+  }
+  .frame-error.show{display:flex;}
+  .frame-error .fe-icon{
+    width:44px; height:44px; border-radius:50%; background:var(--gold); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; margin-bottom:12px;
+  }
+  .frame-error .fe-text{font-size:14.5px; font-weight:600;}
+  .frame-error .fe-btn{
+    margin-top:16px; background:var(--gold); color:var(--ink); font-weight:700; font-size:13px;
+    padding:9px 18px; border-radius:10px;
+  }
+  .player-progress{height:3px; background:rgba(255,255,255,0.15);}
+  .player-progress i{display:block; height:100%; width:0%; background:var(--gold); transition:width .3s linear;}
+
+  .up-next{
+    margin-top:18px; padding:16px; background:var(--card); border:1px solid var(--rule); border-radius:14px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .up-next .label{font-family:'Space Mono'; font-size:10.5px; color:var(--green); font-weight:700; letter-spacing:.06em;}
+  .up-next .title{font-size:15px; font-weight:600; margin-top:4px;}
+  .up-next button{
+    margin-left:auto; background:var(--ink); color:var(--gold-soft); border:none;
+    padding:10px 18px; border-radius:10px; font-size:13.5px; font-weight:600; white-space:nowrap;
+  }
+  .up-next button:hover{background:var(--blue);}
+
+  .chapter-siblings{margin-top:26px;}
+  .chapter-siblings h4{font-size:13px; color:var(--ink-soft); font-weight:600; margin-bottom:10px;}
+
+  footer{
+    text-align:center; padding:30px 20px 40px; color:var(--ink-soft); font-size:12.5px;
+    border-top:1px solid var(--rule); margin-top:20px;
+  }
+
+  @media (max-width:520px){
+    .hero h1{font-size:29px;}
+    .toc-title{font-size:15px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="mark">শি</div>
+    <div class="name">শিখনী</div>
+  </div>
+  <div class="crumb" id="crumb"></div>
+</header>
+
+<!-- ============ HOME ============ -->
+<section class="view active ruled" id="view-home">
+  <div class="hero">
+    <div class="eyebrow">বিনামূল্যে পাঠ, তোমার ভাষায়</div>
+    <h1>যেই ক্লাস তুমি খুঁজছো,<br>ঠিক সেই অধ্যায় থেকে শুরু করো</h1>
+    <p>SSC ও HSC — বিষয়ভিত্তিক, অধ্যায়ভিত্তিক সাজানো ক্লাস। যেখানে রেখেছিলে, সেখান থেকেই এগিয়ে যাও।</p>
+  </div>
+  <div class="class-picker" id="class-picker"></div>
+</section>
+
+<!-- ============ SUBJECTS ============ -->
+<section class="view" id="view-subjects">
+  <div class="page-head">
+    <div class="eyebrow" id="subj-eyebrow">SSC</div>
+    <h2>কোন বিষয়ে পড়বে আজ?</h2>
+  </div>
+  <div class="subject-grid" id="subject-grid"></div>
+</section>
+
+<!-- ============ CHAPTERS (TOC) ============ -->
+<section class="view" id="view-chapters">
+  <div class="page-head">
+    <div class="eyebrow" id="chap-eyebrow">SSC · পদার্থবিজ্ঞান</div>
+    <h2>অধ্যায় নির্বাচন করো</h2>
+  </div>
+  <div class="toc" id="chapter-toc"></div>
+</section>
+
+<!-- ============ CLASS LIST ============ -->
+<section class="view" id="view-classes">
+  <div class="page-head">
+    <div class="eyebrow" id="class-eyebrow">SSC · পদার্থবিজ্ঞান</div>
+    <h2 id="class-heading">অধ্যায় ১</h2>
+  </div>
+  <div class="class-list" id="class-list"></div>
+</section>
+
+<!-- ============ PLAYER ============ -->
+<section class="view" id="view-player">
+  <div class="player-wrap">
+    <div class="player-skin">
+      <div class="player-topbar">
+        <div class="titles">
+          <div class="title" id="p-title">ভৌত জগত ও পরিমাপ — ১</div>
+          <div class="subtitle"><span id="p-duration">১৮:৪২</span> · <span id="p-chapter-name">অধ্যায় ১</span></div>
+        </div>
+        <a id="ff-link" class="ext-link" href="#" target="_blank" rel="noopener" title="YouTube-এ খুলুন">⧉</a>
+      </div>
+      <div class="frame-box" id="frame-box">
+        <div id="p-frame"></div>
+        <div class="frame-error" id="frame-error">
+          <div class="fe-icon">!</div>
+          <div class="fe-text">এই ক্লাসটি এখানে দেখানো যাচ্ছে না</div>
+          <a class="fe-btn" href="#" id="ff-link-2" target="_blank" rel="noopener">YouTube-এ দেখুন ↗</a>
+        </div>
+      </div>
+      <div class="player-progress"><i id="p-progress-fill"></i></div>
+    </div>
+
+    <div class="up-next" id="up-next">
+      <div>
+        <div class="label">পরবর্তী ক্লাস</div>
+        <div class="title" id="next-title">স্কেলার ও ভেক্টর রাশি</div>
+      </div>
+      <button onclick="playNext()">চালাও →</button>
+    </div>
+
+    <div class="chapter-siblings">
+      <h4>এই অধ্যায়ের সব ক্লাস</h4>
+      <div class="class-list" id="sibling-list" style="margin:0; padding:0;"></div>
+    </div>
+  </div>
+</section>
+
+<footer>© শিখনী · সকল অধিকার সংরক্ষিত</footer>
+
+<script>
+/* ============================================================
+   এখানেই সব শ্রেণি / সাবজেক্ট / অধ্যায় / ক্লাস যোগ করবেন।
+   গঠন ৪ স্তরে (level 1 → 4):
+
+   ১) DATA — সবচেয়ে বাইরের লেভেল, প্রতিটা "শ্রেণি" (SSC, HSC, Six, Seven...):
+     KEY: { tag:'...', title:'...', desc:'...', subjects:[ ... ] }
+     নতুন শ্রেণি (যেমন Class Six) যোগ করতে DATA-তে নতুন KEY বসালেই
+     হোমপেজে অটোমেটিক নতুন কার্ড দেখাবে।
+
+   ২) subjects — প্রতিটা আইটেম একটা বিষয়:
+     { icon:'🧪', name:'বিষয়ের নাম', chapters: [ ... ] }
+
+   ৩) chapters — প্রতিটা আইটেম একটা অধ্যায়:
+     { name:'অধ্যায়ের নাম', classes: [ ... ] }
+
+   ৪) classes — প্রতিটা আইটেম একটা ক্লাস (ভিডিও):
+     { n:'ক্লাসের শিরোনাম', dur:'১৮:৪২', yt:'YOUTUBE_VIDEO_ID' }
+
+   yt: এখানে শুধু ভিডিও আইডি বসবে, পুরো লিংক না।
+   যেমন লিংক https://youtu.be/Ew_bLGlTqwY হলে yt:'Ew_bLGlTqwY'
+   yt না দিলে (yt বাদ দিলে) একটা ডেমো ভিডিও দেখাবে — মনে করিয়ে দেবে এই ক্লাসে এখনো ভিডিও বসানো হয়নি।
+   ============================================================ */
+// ---------------- DATA ----------------
+const DATA = {
+  SSC: {
+    tag:'মাধ্যমিক',
+    title:'SSC',
+    desc:'নবম ও দশম শ্রেণির সকল বিষয়ের অধ্যায়ভিত্তিক ক্লাস',
+    subjects: [
+      { icon:'⚛️', name:'পদার্থবিজ্ঞান', chapters:[
+          {name:'ভৌত রাশি ও পরিমাপ', classes:[
+            {n:'ভৌত রাশি কী? (পূর্ণ অধ্যায় ক্লাস)',dur:'১৪:০২',yt:'J4SChBg-c4M'},
+            {n:'একক ও পরিমাপ (পূর্ণ অধ্যায় ক্লাস)',dur:'১৭:২০',yt:'-X1u7Z5ZjDA'},
+            {n:'বোর্ড প্রশ্ন সমাধান ও সাজেশন',dur:'১২:৪৫',yt:'gRJl6Pd3AKU'},
+            {n:'ভেক্টর রাশি — ভূমিকা',dur:'১৮:৪২'},{n:'অনুশীলনী সমাধান',dur:'২২:১০'}
+          ]},
+          {name:'বল', classes:[{n:'বলের ধারণা',dur:'১৫:০০'},{n:'নিউটনের সূত্র',dur:'২০:১৫'},{n:'ঘর্ষণ বল',dur:'১৩:৩০'}]},
+          {name:'কাজ, ক্ষমতা ও শক্তি', classes:[{n:'কাজের সংজ্ঞা',dur:'১১:৫০'},{n:'শক্তির নিত্যতা',dur:'১৯:০৫'}]},
+      ]},
+      { icon:'🧪', name:'রসায়ন', chapters:[
+          {name:'পদার্থের অবস্থা', classes:[{n:'কঠিন, তরল, বায়বীয়',dur:'১৬:১০'},{n:'অবস্থা পরিবর্তন',dur:'১২:২৫'}]},
+          {name:'পরমাণুর গঠন', classes:[{n:'পরমাণু মডেল',dur:'২১:৪০'},{n:'ইলেকট্রন বিন্যাস',dur:'১৮:০০'}]},
+      ]},
+      { icon:'📐', name:'গণিত', chapters:[
+          {name:'বীজগণিতীয় রাশি', classes:[{n:'ভেরিয়েবল ও ধ্রুবক',dur:'১০:৩০',yt:'M7lc1UVf-VE'},{n:'বহুপদী রাশি',dur:'১৪:১৫'}]},
+          {name:'জ্যামিতি — ত্রিভুজ', classes:[{n:'ত্রিভুজের প্রকারভেদ',dur:'১৩:০৫'},{n:'পিথাগোরাসের উপপাদ্য',dur:'১৭:৫৫'}]},
+      ]},
+      { icon:'🧬', name:'জীববিজ্ঞান', chapters:[
+          {name:'জীবনের বৈশিষ্ট্য', classes:[{n:'জীব কাকে বলে',dur:'১২:০০'},{n:'কোষের গঠন',dur:'১৯:৩০'}]},
+      ]},
+    ]
+  },
+  HSC: {
+    tag:'উচ্চ মাধ্যমিক',
+    title:'HSC',
+    desc:'একাদশ ও দ্বাদশ শ্রেণির সকল বিষয়ের অধ্যায়ভিত্তিক ক্লাস',
+    subjects: [
+      { icon:'⚛️', name:'পদার্থবিজ্ঞান ১ম পত্র', chapters:[
+          {name:'ভৌত জগত ও পরিমাপ', classes:[
+            {n:'পদার্থবিজ্ঞানের পরিধি',dur:'১৬:২০'},{n:'একক পদ্ধতি',dur:'১৪:১০'},{n:'মাত্রা বিশ্লেষণ',dur:'২০:০৫'},{n:'ত্রুটি বিশ্লেষণ',dur:'১১:৪৫'}
+          ]},
+          {name:'ভেক্টর', classes:[{n:'স্কেলার ও ভেক্টর রাশি',dur:'১৮:৪২',yt:'Ew_bLGlTqwY'},{n:'ভেক্টর যোগ',dur:'২৩:১০',yt:'M7lc1UVf-VE'},{n:'ডট ও ক্রস গুণন',dur:'১৯:৫৫'}]},
+          {name:'নিউটনিয়ান বলবিদ্যা', classes:[{n:'গতির সূত্র',dur:'২১:০০'},{n:'ভরবেগ সংরক্ষণ',dur:'১৭:৩০'}]},
+      ]},
+      { icon:'🧪', name:'রসায়ন ১ম পত্র', chapters:[
+          {name:'ল্যাবরেটরির নিরাপদ ব্যবহার', classes:[{n:'ল্যাব নিয়মাবলী',dur:'০৯:৪০'}]},
+          {name:'গুণগত রসায়ন', classes:[{n:'মৌলের শ্রেণিবিন্যাস',dur:'২২:১৫'},{n:'পর্যায় সারণি',dur:'১৮:৫০'}]},
+      ]},
+      { icon:'📐', name:'উচ্চতর গণিত ১ম পত্র', chapters:[
+          {name:'ম্যাট্রিক্স ও নির্ণায়ক', classes:[{n:'ম্যাট্রিক্সের ভূমিকা',dur:'১৫:২০',yt:'RsGAMPrPfA8'},{n:'নির্ণায়কের ধর্ম',dur:'১৯:১০'}]},
+          {name:'সরলরেখা', classes:[{n:'সরলরেখার ঢাল',dur:'১৬:৪৫'},{n:'সরলরেখার সমীকরণ',dur:'২০:৩০'}]},
+          {name:'বৃত্ত', classes:[{n:'বৃত্তের সমীকরণ — ভূমিকা',dur:'১৬:০৯',yt:'RsGAMPrPfA8'},{n:'স্পর্শক ও ব্যাসার্ধ',dur:'১৮:২০'}]},
+      ]},
+      { icon:'🧬', name:'জীববিজ্ঞান ১ম পত্র', chapters:[
+          {name:'কোষ ও এর গঠন', classes:[{n:'কোষ তত্ত্ব',dur:'১৩:৫৫'},{n:'কোষ অঙ্গাণু',dur:'২০:৩০'}]},
+      ]},
+    ]
+  }
+};
+
+// A safe generic public YouTube video (embedding allowed) used to demonstrate playback.
+const DEMO_YT_ID = 'M7lc1UVf-VE';
+
+let state = { cls:null, subjIdx:null, chapIdx:null, videoIdx:null };
+
+// ---------------- REAL PROGRESS TRACKING (saved on this device, no login needed) ----------------
+function progressKey(cls, subjIdx, chapIdx, videoIdx){
+  return `shikhoni:${cls}:${subjIdx}:${chapIdx}:${videoIdx}`;
+}
+function getProgress(cls, subjIdx, chapIdx, videoIdx){
+  try{
+    const v = localStorage.getItem(progressKey(cls, subjIdx, chapIdx, videoIdx));
+    return v ? parseFloat(v) : 0;
+  }catch(e){ return 0; }
+}
+function setProgress(cls, subjIdx, chapIdx, videoIdx, fraction){
+  try{
+    const current = getProgress(cls, subjIdx, chapIdx, videoIdx);
+    if(fraction > current){
+      localStorage.setItem(progressKey(cls, subjIdx, chapIdx, videoIdx), String(Math.min(fraction,1)));
+    }
+  }catch(e){}
+}
+function isDone(cls, subjIdx, chapIdx, videoIdx){
+  return getProgress(cls, subjIdx, chapIdx, videoIdx) >= 0.9;
+}
+
+// Load the YouTube IFrame API so we can detect when a video refuses to embed.
+function setCrumb(parts){
+  const el = document.getElementById('crumb');
+  el.innerHTML = parts.map((p,i)=>{
+    const isLast = i===parts.length-1;
+    return (i>0?'<span class="sep">›</span>':'') + (isLast? `<span>${p.label}</span>` : `<button onclick="${p.action}">${p.label}</button>`);
+  }).join('');
+}
+
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goHome(){
+  state = {cls:null,subjIdx:null,chapIdx:null,videoIdx:null};
+  const picker = document.getElementById('class-picker');
+  picker.innerHTML = Object.keys(DATA).map(key => {
+    const g = DATA[key];
+    return `<div class="class-card" onclick="goSubjects('${key}')">
+      <div class="tag">${g.tag}</div>
+      <h3>${g.title}</h3>
+      <div class="desc">${g.desc}</div>
+      <div class="go">শুরু করো →</div>
+    </div>`;
+  }).join('');
+  setCrumb([{label:'শিখনী', action:'goHome()'}]);
+  showView('view-home');
+}
+
+function goSubjects(cls){
+  state.cls = cls; state.subjIdx=null; state.chapIdx=null;
+  document.getElementById('subj-eyebrow').textContent = `${DATA[cls].tag} · ${DATA[cls].title}`;
+  const grid = document.getElementById('subject-grid');
+  grid.innerHTML = DATA[cls].subjects.map((s,i)=>{
+    const chCount = s.chapters.length;
+    return `<div class="subject-card" onclick="goChapters(${i})">
+      <div class="icon">${s.icon}</div>
+      <h3>${s.name}</h3>
+      <div class="count">${chCount} অধ্যায়</div>
+    </div>`;
+  }).join('');
+  setCrumb([{label:'শিখনী', action:'goHome()'}, {label:DATA[cls].title, action:`goSubjects('${cls}')`}]);
+  showView('view-subjects');
+}
+
+function goChapters(subjIdx){
+  state.subjIdx = subjIdx;
+  const subj = DATA[state.cls].subjects[subjIdx];
+  document.getElementById('chap-eyebrow').textContent = `${state.cls} · ${subj.name}`;
+  const toc = document.getElementById('chapter-toc');
+  toc.innerHTML = subj.chapters.map((c,i)=>{
+    const dots = c.classes.map((x,j)=>`<i class="${isDone(state.cls, subjIdx, i, j)?'done':''}"></i>`).join('');
+    return `<div class="toc-item" onclick="goClasses(${i})">
+      <span class="toc-num mono">${String(i+1).padStart(2,'0')}</span>
+      <span class="toc-title">${c.name}</span>
+      <span class="toc-dots"></span>
+      <span class="toc-meta">${c.classes.length} ক্লাস</span>
+      <span class="progress-dots">${dots}</span>
+    </div>`;
+  }).join('');
+  setCrumb([{label:'শিখনী', action:'goHome()'}, {label:DATA[state.cls].title, action:`goSubjects('${state.cls}')`}, {label:subj.name, action:`goChapters(${subjIdx})`}]);
+  showView('view-chapters');
+}
+
+function goClasses(chapIdx){
+  state.chapIdx = chapIdx;
+  const subj = DATA[state.cls].subjects[state.subjIdx];
+  const chap = subj.chapters[chapIdx];
+  document.getElementById('class-eyebrow').textContent = `${state.cls} · ${subj.name}`;
+  document.getElementById('class-heading').textContent = chap.name;
+  renderClassList('class-list', chap.classes, true);
+  setCrumb([{label:'শিখনী', action:'goHome()'}, {label:DATA[state.cls].title, action:`goSubjects('${state.cls}')`}, {label:subj.name, action:`goChapters(${state.subjIdx})`}, {label:chap.name, action:`goClasses(${chapIdx})`}]);
+  showView('view-classes');
+}
+
+function renderClassList(elId, classes, clickable){
+  const el = document.getElementById(elId);
+  el.innerHTML = classes.map((c,i)=>{
+    const prog = getProgress(state.cls, state.subjIdx, state.chapIdx, i);
+    const done = prog >= 0.9;
+    const pct = Math.round(prog*100);
+    return `
+    <div class="class-row" ${clickable?`onclick="playVideo(${i})"`:''}>
+      <div class="thumb">
+        <span class="play">▶</span>
+        ${pct>0 ? `<div class="thumb-fill" style="width:${pct}%"></div>` : ''}
+      </div>
+      <div class="meta">
+        <div class="n">ক্লাস ${i+1} · ${c.n}</div>
+        <div class="d mono">${c.dur}</div>
+      </div>
+      <div class="status">${done ? '✅' : (pct>0 ? `<span class="pct mono">${pct}%</span>` : '')}</div>
+    </div>`;
+  }).join('');
+}
+
+function playVideo(videoIdx){
+  state.videoIdx = videoIdx;
+  const subj = DATA[state.cls].subjects[state.subjIdx];
+  const chap = subj.chapters[state.chapIdx];
+  const video = chap.classes[videoIdx];
+
+  document.getElementById('p-title').textContent = `ক্লাস ${videoIdx+1} · ${video.n}`;
+  document.getElementById('p-duration').textContent = video.dur;
+  document.getElementById('p-chapter-name').textContent = chap.name;
+  const ytId = video.yt || DEMO_YT_ID;
+  loadYoutube(ytId);
+
+  const hasNext = videoIdx+1 < chap.classes.length;
+  document.getElementById('up-next').style.display = hasNext ? 'flex' : 'none';
+  if(hasNext){
+    document.getElementById('next-title').textContent = `ক্লাস ${videoIdx+2} · ${chap.classes[videoIdx+1].n}`;
+  }
+  renderClassList('sibling-list', chap.classes, false);
+  document.querySelectorAll('#sibling-list .class-row').forEach((row,i)=>{
+    row.style.cursor='pointer';
+    row.onclick=()=>playVideo(i);
+    if(i===videoIdx) row.style.borderColor='var(--gold)';
+  });
+
+  setCrumb([{label:'শিখনী', action:'goHome()'}, {label:DATA[state.cls].title, action:`goSubjects('${state.cls}')`}, {label:subj.name, action:`goChapters(${state.subjIdx})`}, {label:chap.name, action:`goClasses(${state.chapIdx})`}, {label:`ক্লাস ${videoIdx+1}`, action:''}]);
+  showView('view-player');
+}
+
+function playNext(){
+  playVideo(state.videoIdx+1);
+}
+
+let ytPlayer = null;
+let ytApiReady = false;
+let progressTimer = null;
+
+const ytScript = document.createElement('script');
+ytScript.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(ytScript);
+window.onYouTubeIframeAPIReady = function(){ ytApiReady = true; };
+
+function loadYoutube(videoId){
+  document.getElementById('ff-link').href = `https://www.youtube.com/watch?v=${videoId}`;
+  document.getElementById('ff-link-2').href = `https://www.youtube.com/watch?v=${videoId}`;
+  document.getElementById('frame-error').classList.remove('show');
+  document.getElementById('p-progress-fill').style.width = '0%';
+  clearInterval(progressTimer);
+
+  const create = () => {
+    if(ytPlayer){
+      ytPlayer.loadVideoById(videoId);
+    } else {
+      ytPlayer = new YT.Player('p-frame', {
+        width: '100%',
+        height: '100%',
+        videoId: videoId,
+        playerVars: { rel:0, modestbranding:1 },
+        events: {
+          'onReady': () => {},
+          'onStateChange': onPlayerStateChange,
+          'onError': (e) => {
+            // 101/150 = owner disabled embedding, 100 = video removed/private
+            document.getElementById('frame-error').classList.add('show');
+            clearInterval(progressTimer);
+          }
+        }
+      });
+    }
+  };
+
+  if(ytApiReady){ create(); } else {
+    window.onYouTubeIframeAPIReady = function(){ ytApiReady = true; create(); };
+  }
+}
+
+function onPlayerStateChange(e){
+  clearInterval(progressTimer);
+  if(e.data === YT.PlayerState.PLAYING){
+    progressTimer = setInterval(() => {
+      if(!ytPlayer || !ytPlayer.getDuration) return;
+      const dur = ytPlayer.getDuration();
+      const cur = ytPlayer.getCurrentTime();
+      if(dur > 0){
+        const frac = cur/dur;
+        document.getElementById('p-progress-fill').style.width = `${frac*100}%`;
+        setProgress(state.cls, state.subjIdx, state.chapIdx, state.videoIdx, frac);
+      }
+    }, 1000);
+  }
+  if(e.data === YT.PlayerState.ENDED){
+    setProgress(state.cls, state.subjIdx, state.chapIdx, state.videoIdx, 1);
+    document.getElementById('p-progress-fill').style.width = '100%';
+  }
+}
+
+goHome();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
